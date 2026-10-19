@@ -2,14 +2,35 @@
 
 namespace App\Controller;
 
+use App\Entity\Team;
+use App\Repository\TeamRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Nelmio\ApiDocBundle\Attribute\Model;
+use OpenApi\Attributes as OA;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Requirement\Requirement;
+use Symfony\Component\Serializer\Exception\ExceptionInterface as SerializerException;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+
 #[Route('/api/teams', name: 'api_team_', format: 'json')]
-#[OA\Tag(name: 'Équipes', description: 'Exemple fourni : les équipes de la ligue')]
+#[OA\Tag(name: 'Équipes')]
 final class TeamController extends AbstractController
 {
-    /**
-     * Injection de dépendances : Symfony fournit automatiquement les services demandés
-     * dans le constructeur (ou en argument d'une méthode de contrôleur) grâce à leur type.
-     */
+    private const READ = ['groups' => ['team:read']];
+// ce que l'API renvoie
+    private const WRITE = ['groups' => ['team:write']];
+// ce que le client a le droit d'envoyer
+
     public function __construct(private readonly EntityManagerInterface $em)
     {
     }
